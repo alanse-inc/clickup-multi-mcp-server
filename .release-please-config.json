@@ -69,9 +69,8 @@
           "jsonpath": "$.version"
         },
         {
-          "type": "plain-text",
-          "path": "src/server.ts",
-          "glob": false
+          "type": "generic",
+          "path": "src/server.ts"
         }
       ]
     }
