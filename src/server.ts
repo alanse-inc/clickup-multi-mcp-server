@@ -129,6 +129,16 @@ import {
   deleteTaskLinkTool, handleDeleteTaskLink
 } from "./tools/dependency.js";
 
+import {
+  checklistTools,
+  handleCreateChecklist,
+  handleEditChecklist,
+  handleDeleteChecklist,
+  handleCreateChecklistItem,
+  handleEditChecklistItem,
+  handleDeleteChecklistItem
+} from "./tools/checklist.js";
+
 import { Logger } from "./logger.js";
 import { clickUpServices } from "./services/shared.js";
 import { enhanceToolsWithWorkspace } from "./tools/tool-enhancer.js";
@@ -266,6 +276,7 @@ export function configureServer() {
       deleteDependencyTool,
       addTaskLinkTool,
       deleteTaskLinkTool,
+      ...checklistTools,
       ...documentModule()
     ] as Tool[];
 
@@ -287,7 +298,7 @@ export function configureServer() {
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
     toolCount: 45,
-    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency"]
+    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist"]
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -445,6 +456,18 @@ export function configureServer() {
           return handleAddTaskLink(params as any);
         case "delete_task_link":
           return handleDeleteTaskLink(params as any);
+        case "create_checklist":
+          return handleCreateChecklist(params as any);
+        case "edit_checklist":
+          return handleEditChecklist(params as any);
+        case "delete_checklist":
+          return handleDeleteChecklist(params as any);
+        case "create_checklist_item":
+          return handleCreateChecklistItem(params as any);
+        case "edit_checklist_item":
+          return handleEditChecklistItem(params as any);
+        case "delete_checklist_item":
+          return handleDeleteChecklistItem(params as any);
         default:
           logger.error(`Unknown tool requested: ${name}`);
           const error = new Error(`Unknown tool: ${name}`);

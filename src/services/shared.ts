@@ -85,5 +85,6 @@ export const {
   workspace: workspaceService,
   timeTracking: timeTrackingService,
   document: documentService,
-  goal: goalService
+  goal: goalService,
+  checklist: checklistService
 } = clickUpServices;
