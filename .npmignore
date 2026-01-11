@@ -1,0 +1,25 @@
+# Source
+src/
+.env
+.env.example
+
+# Development configs
+.git/
+.github/
+.gitignore
+.npmrc
+tsconfig.json
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Misc
+.DS_Store
+*.swp
+*.swo

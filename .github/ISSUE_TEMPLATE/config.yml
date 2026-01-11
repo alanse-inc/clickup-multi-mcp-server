@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation & User Guide
+    url: https://github.com/alanse-inc/clickup-multi-mcp-server/blob/main/docs/user-guide.md
+    about: Comprehensive documentation for all tools and features
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/alanse-inc/clickup-multi-mcp-server/security/advisories/new
+    about: Report security vulnerabilities privately
+  - name: 💬 Questions & Discussions
+    url: https://github.com/alanse-inc/clickup-multi-mcp-server/discussions
+    about: Ask questions, share ideas, or get help from the community
+  - name: 📋 Requirements Check
+    url: https://github.com/alanse-inc/clickup-multi-mcp-server#requirements
+    about: Verify Node.js v18+ and other requirements before reporting issues

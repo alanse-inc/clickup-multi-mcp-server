@@ -1,0 +1,102 @@
+name: Build, Tag and Publish
+
+on:
+  # Only run this workflow manually, not automatically on push
+  workflow_dispatch:
+    inputs:
+      version_increment:
+        description: 'Version increment (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # This ensures all history is fetched for proper versioning
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+      
+      - name: Get current version
+        id: package_version
+        run: echo "current_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      
+      - name: Calculate new version
+        id: new_version
+        run: |
+          if [ "${{ github.event.inputs.version_increment }}" = "patch" ]; then
+            npm --no-git-tag-version version patch
+          elif [ "${{ github.event.inputs.version_increment }}" = "minor" ]; then
+            npm --no-git-tag-version version minor
+          elif [ "${{ github.event.inputs.version_increment }}" = "major" ]; then
+            npm --no-git-tag-version version major
+          fi
+          echo "new_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      
+      - name: Update server.ts version
+        run: |
+          sed -i "s/version: \"${{ steps.package_version.outputs.current_version }}\"/version: \"${{ steps.new_version.outputs.new_version }}\"/g" src/server.ts
+      
+      - name: Commit all version changes
+        run: |
+          git add package.json package-lock.json src/server.ts
+          git commit -m "Bump version to ${{ steps.new_version.outputs.new_version }} [skip ci]"
+          git tag -a v${{ steps.new_version.outputs.new_version }} -m "Version ${{ steps.new_version.outputs.new_version }}"
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Create GitHub Release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let releaseNotes = '';
+            
+            try {
+              // Read release notes from file
+              releaseNotes = fs.readFileSync('./release-notes.md', 'utf8');
+            } catch (error) {
+              console.log('Warning: Could not read release-notes.md, using default message');
+              releaseNotes = 'See CHANGELOG.md for detailed changes in this version.';
+            }
+            
+            // Create the release
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${{ steps.new_version.outputs.new_version }}`,
+              name: `v${{ steps.new_version.outputs.new_version }}`,
+              body: releaseNotes,
+              draft: false,
+              prerelease: false
+            });
+      
+      - name: Push changes
+        run: git push --follow-tags 
