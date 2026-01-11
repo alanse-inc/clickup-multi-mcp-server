@@ -1,6 +1,6 @@
 {
   "name": "@alanse/clickup-multi-mcp-server",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "ClickUp MCP Server with Multi-Workspace Support - Integrate multiple ClickUp workspaces with AI through Model Context Protocol",
   "type": "module",
   "main": "build/index.js",
