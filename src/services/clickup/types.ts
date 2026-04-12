@@ -628,6 +628,131 @@ export interface ExtendedTaskFilters extends TaskFilters {
   detail_level?: 'summary' | 'detailed';
 }
 
+// ============================================================================
+// View Types
+// ============================================================================
+
+/**
+ * View type options
+ */
+export type ViewType =
+  | 'list'
+  | 'board'
+  | 'calendar'
+  | 'table'
+  | 'gantt'
+  | 'timeline'
+  | 'workload'
+  | 'activity'
+  | 'map'
+  | 'chat';
+
+/**
+ * Parent type for views (where the view is located in hierarchy)
+ * 7 = Team (Workspace/Everything level)
+ * 4 = Space
+ * 5 = Folder
+ * 6 = List
+ */
+export type ViewParentType = 7 | 4 | 5 | 6;
+
+/**
+ * View grouping configuration
+ */
+export interface ViewGrouping {
+  field: string;
+  dir: 1 | -1; // 1=asc, -1=desc
+  collapsed?: string[]; // IDs of collapsed groups
+  groups?: any; // Additional group configuration
+}
+
+/**
+ * View sorting configuration
+ */
+export interface ViewSorting {
+  fields: Array<{
+    field: string;
+    dir: 1 | -1; // 1=asc, -1=desc
+  }>;
+}
+
+/**
+ * View filter field configuration
+ */
+export interface ViewFilterField {
+  field: string;
+  operator: string;
+  value: any;
+}
+
+/**
+ * View filters configuration
+ */
+export interface ViewFilters {
+  op: 'AND' | 'OR';
+  fields: ViewFilterField[];
+  search?: string;
+  search_fields?: string[];
+  show_closed?: boolean;
+}
+
+/**
+ * View column configuration
+ */
+export interface ViewColumn {
+  id: string;
+  hidden?: boolean;
+  width?: number;
+}
+
+/**
+ * View settings configuration
+ */
+export interface ViewSettings {
+  show_task_locations?: boolean;
+  show_subtasks?: number;
+  show_subtask_parent_names?: boolean;
+  show_closed_subtasks?: boolean;
+  show_assignees?: boolean;
+  show_images?: boolean;
+  collapse_empty_columns?: boolean;
+  me_comments?: boolean;
+  me_subtasks?: boolean;
+  me_checklists?: boolean;
+  [key: string]: any; // Allow additional settings
+}
+
+/**
+ * Data for creating a view
+ */
+export interface CreateViewData {
+  name: string;
+  type: ViewType;
+  parent?: {
+    id: string;
+    type: ViewParentType;
+  };
+  grouping?: ViewGrouping;
+  sorting?: ViewSorting;
+  filters?: ViewFilters;
+  columns?: ViewColumn[];
+  divide?: number;
+  settings?: ViewSettings;
+}
+
+/**
+ * Data for updating a view
+ */
+export interface UpdateViewData {
+  name?: string;
+  grouping?: ViewGrouping;
+  sorting?: ViewSorting;
+  filters?: ViewFilters;
+  columns?: ViewColumn[];
+  divide?: number;
+  settings?: ViewSettings;
+}
+
 /**
  * Options for listing documents
  */
