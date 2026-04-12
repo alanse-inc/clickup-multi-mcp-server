@@ -154,6 +154,10 @@ export const createTaskTool = {
           ]
         },
         description: "Optional array of assignee user IDs (numbers), emails, or usernames to assign to the task."
+      },
+      task_type: {
+        type: "string",
+        description: "Optional task type ID. Assigns a task type defined in the space's Types for Tasks settings. Use get_workspace_hierarchy to find available task type IDs."
       }
     }
   }
@@ -240,6 +244,11 @@ export const updateTaskTool = {
           ]
         },
         description: "Optional array of assignee user IDs (numbers), emails, or usernames to assign to the task."
+      },
+      task_type: {
+        type: "string",
+        nullable: true,
+        description: "Task type ID to assign to the task. Set to null to clear the task type. Use get_workspace_hierarchy to find available task type IDs."
       }
     }
   }

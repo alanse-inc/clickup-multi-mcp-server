@@ -246,6 +246,8 @@ export interface CreateTaskData {
     id: string;
     value: any;
   }>;
+  /** Task type ID (from Types for Tasks feature). Set to null to clear. */
+  task_type?: string | null;
 }
 
 /**
