@@ -22,6 +22,7 @@ import {
   moveTaskTool,
   duplicateTaskTool,
   getTaskTool,
+  getTasksTool,
   deleteTaskTool,
   getTaskCommentsTool,
   createTaskCommentTool,
@@ -84,6 +85,9 @@ import {
 } from "./tools/folder.js";
 import {
   getSpaceTagsTool, handleGetSpaceTags,
+  createSpaceTagTool, handleCreateSpaceTag,
+  updateSpaceTagTool, handleUpdateSpaceTag,
+  deleteSpaceTagTool, handleDeleteSpaceTag,
   addTagToTaskTool, handleAddTagToTask,
   removeTagFromTaskTool, handleRemoveTagFromTask
 } from "./tools/tag.js";
@@ -237,6 +241,7 @@ export function configureServer() {
       availableWorkspacesTool,
       createTaskTool,
       getTaskTool,
+      getTasksTool,
       updateTaskTool,
       moveTaskTool,
       duplicateTaskTool,
@@ -270,6 +275,9 @@ export function configureServer() {
       updateFolderTool,
       deleteFolderTool,
       getSpaceTagsTool,
+      createSpaceTagTool,
+      updateSpaceTagTool,
+      deleteSpaceTagTool,
       addTagToTaskTool,
       removeTagFromTaskTool,
       getWorkspaceMembersTool,
@@ -314,7 +322,7 @@ export function configureServer() {
 
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
-    toolCount: 57,
+    toolCount: 81,
     categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view"]
   });
 
@@ -355,6 +363,8 @@ export function configureServer() {
           return handleDuplicateTask(params);
         case "get_task":
           return handleGetTask(params);
+        case "get_tasks":
+          return handleGetTasks(params);
         case "delete_task":
           return handleDeleteTask(params);
         case "get_task_comments":
@@ -393,6 +403,12 @@ export function configureServer() {
           return handleDeleteFolder(params);
         case "get_space_tags":
           return handleGetSpaceTags(params);
+        case "create_space_tag":
+          return handleCreateSpaceTag(params);
+        case "update_space_tag":
+          return handleUpdateSpaceTag(params);
+        case "delete_space_tag":
+          return handleDeleteSpaceTag(params);
         case "add_tag_to_task":
           return handleAddTagToTask(params);
         case "remove_tag_from_task":

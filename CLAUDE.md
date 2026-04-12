@@ -208,6 +208,8 @@ Follow these steps in order to expose a new ClickUp API feature as MCP tools.
 ### Step 8 — Build & Verify
 
 - [ ] Run `npm run build` — must compile with zero errors
+- [ ] Run `npm test` — all tool registration tests must pass
+- [ ] Update the expected tool count in `src/__tests__/tool-registration.test.ts` if it changed
 - [ ] Test affected tools manually if possible
 
 ---
