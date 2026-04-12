@@ -139,6 +139,22 @@ import {
   handleDeleteChecklistItem
 } from "./tools/checklist.js";
 
+import {
+  viewTools,
+  handleGetWorkspaceViews,
+  handleCreateWorkspaceView,
+  handleGetSpaceViews,
+  handleCreateSpaceView,
+  handleGetFolderViews,
+  handleCreateFolderView,
+  handleGetListViews,
+  handleCreateListView,
+  handleGetView,
+  handleUpdateView,
+  handleDeleteView,
+  handleGetViewTasks
+} from "./tools/view.js";
+
 import { Logger } from "./logger.js";
 import { clickUpServices } from "./services/shared.js";
 import { enhanceToolsWithWorkspace } from "./tools/tool-enhancer.js";
@@ -277,6 +293,7 @@ export function configureServer() {
       addTaskLinkTool,
       deleteTaskLinkTool,
       ...checklistTools,
+      ...viewTools,
       ...documentModule()
     ] as Tool[];
 
@@ -297,8 +314,8 @@ export function configureServer() {
 
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
-    toolCount: 45,
-    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist"]
+    toolCount: 57,
+    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view"]
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -468,6 +485,30 @@ export function configureServer() {
           return handleEditChecklistItem(params as any);
         case "delete_checklist_item":
           return handleDeleteChecklistItem(params as any);
+        case "get_workspace_views":
+          return handleGetWorkspaceViews(params as any);
+        case "create_workspace_view":
+          return handleCreateWorkspaceView(params as any);
+        case "get_space_views":
+          return handleGetSpaceViews(params as any);
+        case "create_space_view":
+          return handleCreateSpaceView(params as any);
+        case "get_folder_views":
+          return handleGetFolderViews(params as any);
+        case "create_folder_view":
+          return handleCreateFolderView(params as any);
+        case "get_list_views":
+          return handleGetListViews(params as any);
+        case "create_list_view":
+          return handleCreateListView(params as any);
+        case "get_view":
+          return handleGetView(params as any);
+        case "update_view":
+          return handleUpdateView(params as any);
+        case "delete_view":
+          return handleDeleteView(params as any);
+        case "get_view_tasks":
+          return handleGetViewTasks(params as any);
         default:
           logger.error(`Unknown tool requested: ${name}`);
           const error = new Error(`Unknown tool: ${name}`);
