@@ -12,7 +12,7 @@
  * - Getting tasks within a view
  */
 
-import { BaseClickUpService, ErrorCode, ClickUpServiceError, ServiceResponse } from './base.js';
+import { BaseClickUpService } from './base.js';
 import {
   ClickUpView,
   ClickUpListViewsResponse,
@@ -22,72 +22,44 @@ import {
 } from './types.js';
 
 export class ViewService extends BaseClickUpService {
-  constructor(apiKey: string, teamId: string, baseUrl?: string) {
-    super(apiKey, teamId, baseUrl);
-  }
-
-  /**
-   * Helper method to handle errors consistently
-   * @param error The error that occurred
-   * @param message Optional custom error message
-   * @returns A ClickUpServiceError
-   */
-  private handleError(error: any, message?: string): ClickUpServiceError {
-    if (error instanceof ClickUpServiceError) {
-      return error;
-    }
-
-    return new ClickUpServiceError(
-      message || `View service error: ${error.message}`,
-      ErrorCode.UNKNOWN,
-      error
-    );
-  }
-
   // ============================================================================
   // Workspace (Everything level) Views
   // ============================================================================
 
   /**
    * Get all views at the workspace (team/everything) level
-   * @param teamId The ID of the workspace/team
    * @returns List of views
    */
-  async getWorkspaceViews(teamId: string): Promise<ClickUpListViewsResponse> {
-    this.logOperation('getWorkspaceViews', { teamId });
+  async getWorkspaceViews(): Promise<ClickUpListViewsResponse> {
+    return this.makeRequest(async () => {
+      this.logOperation('getWorkspaceViews', { teamId: this.teamId });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.get<ClickUpListViewsResponse>(
-          `/team/${teamId}/view`
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to get workspace views for team ${teamId}`);
-    }
+      const response = await this.client.get<ClickUpListViewsResponse>(
+        `/team/${this.teamId}/view`
+      );
+
+      this.logger.info(`Retrieved workspace views for team: ${this.teamId}`);
+      return response.data;
+    });
   }
 
   /**
    * Create a new view at the workspace (team/everything) level
-   * @param teamId The ID of the workspace/team
    * @param viewData The data for the new view
    * @returns The created view
    */
-  async createWorkspaceView(teamId: string, viewData: CreateViewData): Promise<ClickUpView> {
-    this.logOperation('createWorkspaceView', { teamId, ...viewData });
+  async createWorkspaceView(viewData: CreateViewData): Promise<ClickUpView> {
+    return this.makeRequest(async () => {
+      this.logOperation('createWorkspaceView', { teamId: this.teamId, ...viewData });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.post<ClickUpView>(
-          `/team/${teamId}/view`,
-          viewData
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to create workspace view in team ${teamId}`);
-    }
+      const response = await this.client.post<ClickUpView>(
+        `/team/${this.teamId}/view`,
+        viewData
+      );
+
+      this.logger.info(`Created workspace view: ${response.data.name} (${response.data.id})`);
+      return response.data;
+    });
   }
 
   // ============================================================================
@@ -100,18 +72,16 @@ export class ViewService extends BaseClickUpService {
    * @returns List of views
    */
   async getSpaceViews(spaceId: string): Promise<ClickUpListViewsResponse> {
-    this.logOperation('getSpaceViews', { spaceId });
+    return this.makeRequest(async () => {
+      this.logOperation('getSpaceViews', { spaceId });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.get<ClickUpListViewsResponse>(
-          `/space/${spaceId}/view`
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to get space views for space ${spaceId}`);
-    }
+      const response = await this.client.get<ClickUpListViewsResponse>(
+        `/space/${spaceId}/view`
+      );
+
+      this.logger.info(`Retrieved views for space: ${spaceId}`);
+      return response.data;
+    });
   }
 
   /**
@@ -121,19 +91,17 @@ export class ViewService extends BaseClickUpService {
    * @returns The created view
    */
   async createSpaceView(spaceId: string, viewData: CreateViewData): Promise<ClickUpView> {
-    this.logOperation('createSpaceView', { spaceId, ...viewData });
+    return this.makeRequest(async () => {
+      this.logOperation('createSpaceView', { spaceId, ...viewData });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.post<ClickUpView>(
-          `/space/${spaceId}/view`,
-          viewData
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to create space view in space ${spaceId}`);
-    }
+      const response = await this.client.post<ClickUpView>(
+        `/space/${spaceId}/view`,
+        viewData
+      );
+
+      this.logger.info(`Created space view: ${response.data.name} (${response.data.id})`);
+      return response.data;
+    });
   }
 
   // ============================================================================
@@ -146,18 +114,16 @@ export class ViewService extends BaseClickUpService {
    * @returns List of views
    */
   async getFolderViews(folderId: string): Promise<ClickUpListViewsResponse> {
-    this.logOperation('getFolderViews', { folderId });
+    return this.makeRequest(async () => {
+      this.logOperation('getFolderViews', { folderId });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.get<ClickUpListViewsResponse>(
-          `/folder/${folderId}/view`
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to get folder views for folder ${folderId}`);
-    }
+      const response = await this.client.get<ClickUpListViewsResponse>(
+        `/folder/${folderId}/view`
+      );
+
+      this.logger.info(`Retrieved views for folder: ${folderId}`);
+      return response.data;
+    });
   }
 
   /**
@@ -167,19 +133,17 @@ export class ViewService extends BaseClickUpService {
    * @returns The created view
    */
   async createFolderView(folderId: string, viewData: CreateViewData): Promise<ClickUpView> {
-    this.logOperation('createFolderView', { folderId, ...viewData });
+    return this.makeRequest(async () => {
+      this.logOperation('createFolderView', { folderId, ...viewData });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.post<ClickUpView>(
-          `/folder/${folderId}/view`,
-          viewData
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to create folder view in folder ${folderId}`);
-    }
+      const response = await this.client.post<ClickUpView>(
+        `/folder/${folderId}/view`,
+        viewData
+      );
+
+      this.logger.info(`Created folder view: ${response.data.name} (${response.data.id})`);
+      return response.data;
+    });
   }
 
   // ============================================================================
@@ -192,18 +156,16 @@ export class ViewService extends BaseClickUpService {
    * @returns List of views
    */
   async getListViews(listId: string): Promise<ClickUpListViewsResponse> {
-    this.logOperation('getListViews', { listId });
+    return this.makeRequest(async () => {
+      this.logOperation('getListViews', { listId });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.get<ClickUpListViewsResponse>(
-          `/list/${listId}/view`
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to get list views for list ${listId}`);
-    }
+      const response = await this.client.get<ClickUpListViewsResponse>(
+        `/list/${listId}/view`
+      );
+
+      this.logger.info(`Retrieved views for list: ${listId}`);
+      return response.data;
+    });
   }
 
   /**
@@ -213,19 +175,17 @@ export class ViewService extends BaseClickUpService {
    * @returns The created view
    */
   async createListView(listId: string, viewData: CreateViewData): Promise<ClickUpView> {
-    this.logOperation('createListView', { listId, ...viewData });
+    return this.makeRequest(async () => {
+      this.logOperation('createListView', { listId, ...viewData });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.post<ClickUpView>(
-          `/list/${listId}/view`,
-          viewData
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to create list view in list ${listId}`);
-    }
+      const response = await this.client.post<ClickUpView>(
+        `/list/${listId}/view`,
+        viewData
+      );
+
+      this.logger.info(`Created list view: ${response.data.name} (${response.data.id})`);
+      return response.data;
+    });
   }
 
   // ============================================================================
@@ -238,16 +198,14 @@ export class ViewService extends BaseClickUpService {
    * @returns The requested view
    */
   async getView(viewId: string): Promise<ClickUpView> {
-    this.logOperation('getView', { viewId });
+    return this.makeRequest(async () => {
+      this.logOperation('getView', { viewId });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.get<ClickUpView>(`/view/${viewId}`);
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to get view ${viewId}`);
-    }
+      const response = await this.client.get<ClickUpView>(`/view/${viewId}`);
+
+      this.logger.info(`Retrieved view: ${response.data.name} (${viewId})`);
+      return response.data;
+    });
   }
 
   /**
@@ -257,40 +215,31 @@ export class ViewService extends BaseClickUpService {
    * @returns The updated view
    */
   async updateView(viewId: string, updateData: UpdateViewData): Promise<ClickUpView> {
-    this.logOperation('updateView', { viewId, ...updateData });
+    return this.makeRequest(async () => {
+      this.logOperation('updateView', { viewId, ...updateData });
 
-    try {
-      return await this.makeRequest(async () => {
-        const response = await this.client.put<ClickUpView>(
-          `/view/${viewId}`,
-          updateData
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to update view ${viewId}`);
-    }
+      const response = await this.client.put<ClickUpView>(
+        `/view/${viewId}`,
+        updateData
+      );
+
+      this.logger.info(`Updated view: ${response.data.name} (${viewId})`);
+      return response.data;
+    });
   }
 
   /**
    * Delete a view
    * @param viewId The ID of the view to delete
-   * @returns Success indicator
    */
-  async deleteView(viewId: string): Promise<ServiceResponse<void>> {
-    this.logOperation('deleteView', { viewId });
+  async deleteView(viewId: string): Promise<void> {
+    return this.makeRequest(async () => {
+      this.logOperation('deleteView', { viewId });
 
-    try {
-      await this.makeRequest(async () => {
-        await this.client.delete(`/view/${viewId}`);
-      });
+      await this.client.delete(`/view/${viewId}`);
 
-      return {
-        success: true
-      };
-    } catch (error) {
-      throw this.handleError(error, `Failed to delete view ${viewId}`);
-    }
+      this.logger.info(`Deleted view: ${viewId}`);
+    });
   }
 
   /**
@@ -300,23 +249,21 @@ export class ViewService extends BaseClickUpService {
    * @returns Tasks in the view
    */
   async getViewTasks(viewId: string, page?: number): Promise<ClickUpViewTasksResponse> {
-    this.logOperation('getViewTasks', { viewId, page });
+    return this.makeRequest(async () => {
+      this.logOperation('getViewTasks', { viewId, page });
 
-    try {
-      return await this.makeRequest(async () => {
-        const params: any = {};
-        if (page !== undefined) {
-          params.page = page;
-        }
+      const params: Record<string, number> = {};
+      if (page !== undefined) {
+        params['page'] = page;
+      }
 
-        const response = await this.client.get<ClickUpViewTasksResponse>(
-          `/view/${viewId}/task`,
-          { params }
-        );
-        return response.data;
-      });
-    } catch (error) {
-      throw this.handleError(error, `Failed to get tasks for view ${viewId}`);
-    }
+      const response = await this.client.get<ClickUpViewTasksResponse>(
+        `/view/${viewId}/task`,
+        { params }
+      );
+
+      this.logger.info(`Retrieved tasks for view: ${viewId}`);
+      return response.data;
+    });
   }
 }

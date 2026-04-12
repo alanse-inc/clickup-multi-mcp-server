@@ -579,23 +579,23 @@ export interface WorkspaceTasksResponse {
 export interface ClickUpView {
   id: string;
   name: string;
-  type: string;
+  type: ViewType | string;
   parent: {
     id: string;
     type: number;
   };
-  grouping: any;
-  sorting: any;
-  filters: any;
-  columns: any;
-  team_sidebar: any;
-  settings: any;
+  grouping: ViewGrouping | null;
+  sorting: ViewSorting | null;
+  filters: ViewFilters | null;
+  columns: ViewColumn[];
+  team_sidebar: Record<string, unknown> | null;
+  settings: ViewSettings | null;
   date_created: string;
   creator: number;
   visibility: string;
   protected: boolean;
   protected_note: string | null;
-  protected_by: any | null;
+  protected_by: Record<string, unknown> | null;
   date_protected: string | null;
   orderindex: number;
 }
@@ -648,13 +648,11 @@ export type ViewType =
   | 'chat';
 
 /**
- * Parent type for views (where the view is located in hierarchy)
- * 7 = Team (Workspace/Everything level)
- * 4 = Space
- * 5 = Folder
- * 6 = List
+ * Parent type for views (where the view is located in hierarchy).
+ * Reuses ClickUpParentType excluding Workspace(12) which is not valid for views:
+ * All(7) = Team/Everything level, Space(4), Folder(5), List(6)
  */
-export type ViewParentType = 7 | 4 | 5 | 6;
+export type ViewParentType = Exclude<ClickUpParentType, ClickUpParentType.Workspace>;
 
 /**
  * View grouping configuration
@@ -663,7 +661,7 @@ export interface ViewGrouping {
   field: string;
   dir: 1 | -1; // 1=asc, -1=desc
   collapsed?: string[]; // IDs of collapsed groups
-  groups?: any; // Additional group configuration
+  groups?: Record<string, unknown>; // Additional group configuration
 }
 
 /**
@@ -681,8 +679,8 @@ export interface ViewSorting {
  */
 export interface ViewFilterField {
   field: string;
-  operator: string;
-  value: any;
+  operator: '=' | '!=' | '<' | '>' | '<=' | '>=' | 'includes' | 'not includes' | 'is null' | 'is not null' | string;
+  value: string | number | boolean | string[] | null;
 }
 
 /**
@@ -710,7 +708,8 @@ export interface ViewColumn {
  */
 export interface ViewSettings {
   show_task_locations?: boolean;
-  show_subtasks?: number;
+  /** 0 = off, 1 = all subtasks, 2 = collapsed */
+  show_subtasks?: 0 | 1 | 2;
   show_subtask_parent_names?: boolean;
   show_closed_subtasks?: boolean;
   show_assignees?: boolean;
@@ -719,7 +718,6 @@ export interface ViewSettings {
   me_comments?: boolean;
   me_subtasks?: boolean;
   me_checklists?: boolean;
-  [key: string]: any; // Allow additional settings
 }
 
 /**
@@ -741,7 +739,8 @@ export interface CreateViewData {
 }
 
 /**
- * Data for updating a view
+ * Data for updating a view.
+ * Note: `type` and `parent` are intentionally absent — they are immutable after creation.
  */
 export interface UpdateViewData {
   name?: string;
