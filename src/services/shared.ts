@@ -87,5 +87,6 @@ export const {
   document: documentService,
   goal: goalService,
   checklist: checklistService,
-  view: viewService
+  view: viewService,
+  comment: commentService
 } = clickUpServices;

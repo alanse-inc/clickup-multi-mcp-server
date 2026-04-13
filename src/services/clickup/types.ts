@@ -417,6 +417,24 @@ export interface CommentsResponse {
 }
 
 /**
+ * Payload for updating an existing comment (task / view / list thread)
+ */
+export interface UpdateCommentData {
+  comment_text?: string;
+  assignee?: number;
+  resolved?: boolean;
+}
+
+/**
+ * Payload for creating a comment or threaded reply on a view, list, or as a reply
+ */
+export interface CreateCommentData {
+  comment_text: string;
+  notify_all?: boolean;
+  assignee?: number;
+}
+
+/**
  * Task attachment object as returned by the ClickUp API
  */
 export interface ClickUpTaskAttachment {

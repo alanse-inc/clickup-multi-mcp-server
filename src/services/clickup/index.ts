@@ -30,6 +30,7 @@ export { DocumentService } from './document.js';
 export { GoalService } from './goal.js';
 export { ChecklistService } from './checklist.js';
 export { ViewService } from './view.js';
+export { CommentService } from './comment.js';
 
 // Import service classes for the factory function
 import { WorkspaceService } from './workspace.js';
@@ -43,6 +44,7 @@ import { DocumentService } from './document.js';
 import { GoalService } from './goal.js';
 import { ChecklistService } from './checklist.js';
 import { ViewService } from './view.js';
+import { CommentService } from './comment.js';
 
 /**
  * Configuration options for ClickUp services
@@ -67,6 +69,7 @@ export interface ClickUpServices {
   goal: GoalService;
   checklist: ChecklistService;
   view: ViewService;
+  comment: CommentService;
 }
 
 // Singleton logger for ClickUp services
@@ -118,6 +121,9 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
   logger.info('Initializing ClickUp View service');
   const viewService = new ViewService(apiKey, teamId, baseUrl);
 
+  logger.info('Initializing ClickUp Comment service');
+  const commentService = new CommentService(apiKey, teamId, baseUrl);
+
   const services = {
     workspace: workspaceService,
     task: taskService,
@@ -128,7 +134,8 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
     document: documentService,
     goal: goalService,
     checklist: checklistService,
-    view: viewService
+    view: viewService,
+    comment: commentService
   };
 
   // Log successful completion

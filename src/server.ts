@@ -159,6 +159,18 @@ import {
   handleGetViewTasks
 } from "./tools/view.js";
 
+import {
+  commentTools,
+  handleUpdateComment,
+  handleDeleteComment,
+  handleGetViewComments,
+  handleCreateViewComment,
+  handleGetListComments,
+  handleCreateListComment,
+  handleGetCommentReplies,
+  handleCreateCommentReply
+} from "./tools/comment.js";
+
 import { Logger } from "./logger.js";
 import { clickUpServices } from "./services/shared.js";
 import { enhanceToolsWithWorkspace } from "./tools/tool-enhancer.js";
@@ -302,6 +314,7 @@ export function configureServer() {
       deleteTaskLinkTool,
       ...checklistTools,
       ...viewTools,
+      ...commentTools,
       ...documentModule()
     ] as Tool[];
 
@@ -322,8 +335,8 @@ export function configureServer() {
 
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
-    toolCount: 81,
-    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view"]
+    toolCount: 89,
+    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view", "comment"]
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -525,6 +538,22 @@ export function configureServer() {
           return handleDeleteView(params as any);
         case "get_view_tasks":
           return handleGetViewTasks(params as any);
+        case "update_comment":
+          return handleUpdateComment(params as any);
+        case "delete_comment":
+          return handleDeleteComment(params as any);
+        case "get_view_comments":
+          return handleGetViewComments(params as any);
+        case "create_view_comment":
+          return handleCreateViewComment(params as any);
+        case "get_list_comments":
+          return handleGetListComments(params as any);
+        case "create_list_comment":
+          return handleCreateListComment(params as any);
+        case "get_comment_replies":
+          return handleGetCommentReplies(params as any);
+        case "create_comment_reply":
+          return handleCreateCommentReply(params as any);
         default:
           logger.error(`Unknown tool requested: ${name}`);
           const error = new Error(`Unknown tool: ${name}`);

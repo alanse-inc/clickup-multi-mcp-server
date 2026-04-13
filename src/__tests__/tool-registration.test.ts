@@ -29,6 +29,7 @@ vi.mock('../services/shared.js', () => ({
     goal: {},
     checklist: {},
     view: {},
+    comment: {},
   },
   getClickUpServices: () => ({}),
 }));
@@ -249,6 +250,18 @@ import {
   handleGetViewTasks,
 } from '../tools/view.js';
 
+import {
+  commentTools,
+  handleUpdateComment,
+  handleDeleteComment,
+  handleGetViewComments,
+  handleCreateViewComment,
+  handleGetListComments,
+  handleCreateListComment,
+  handleGetCommentReplies,
+  handleCreateCommentReply,
+} from '../tools/comment.js';
+
 // ── Build the complete registry ───────────────────────────────────────────────
 
 type HandlerFn = (...args: any[]) => any;
@@ -386,6 +399,20 @@ const TOOL_REGISTRY: RegistryEntry[] = [
       handleGetViewTasks,
     ][i],
   })),
+
+  ...commentTools.map((tool, i) => ({
+    tool,
+    handler: [
+      handleUpdateComment,
+      handleDeleteComment,
+      handleGetViewComments,
+      handleCreateViewComment,
+      handleGetListComments,
+      handleCreateListComment,
+      handleGetCommentReplies,
+      handleCreateCommentReply,
+    ][i],
+  })),
 ];
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -417,13 +444,13 @@ describe('Tool Registration Integrity', () => {
     }
   });
 
-  it('total registered tool count is 88 (excluding document conditional tools: 81)', () => {
+  it('total registered tool count is 96 (excluding document conditional tools: 89)', () => {
     // Document tools (7) are conditionally enabled at runtime, but always in the registry
     const nonDocTools = TOOL_REGISTRY.filter(e => !['create_document', 'get_document',
       'list_documents', 'list_document_pages', 'get_document_pages',
       'create_document_page', 'update_document_page'].includes(e.tool.name));
-    expect(nonDocTools).toHaveLength(81);
-    expect(TOOL_REGISTRY).toHaveLength(88);
+    expect(nonDocTools).toHaveLength(89);
+    expect(TOOL_REGISTRY).toHaveLength(96);
   });
 
   it('all tool names use snake_case format', () => {
