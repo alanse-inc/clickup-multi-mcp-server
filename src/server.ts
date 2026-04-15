@@ -171,6 +171,36 @@ import {
   handleCreateCommentReply
 } from "./tools/comment.js";
 
+import {
+  chatTools,
+  handleGetChatChannels,
+  handleCreateChatChannel,
+  handleGetChatChannel,
+  handleUpdateChatChannel,
+  handleDeleteChatChannel,
+  handleGetChatMessages,
+  handleSendChatMessage,
+  handleUpdateChatMessage,
+  handleDeleteChatMessage
+} from "./tools/chat.js";
+
+import {
+  customFieldsTools,
+  handleGetListFields,
+  handleGetFolderFields,
+  handleGetSpaceFields,
+  handleGetWorkspaceFields,
+  handleDeleteCustomFieldValue
+} from "./tools/custom-fields.js";
+
+import {
+  webhookTools,
+  handleGetWebhooks,
+  handleCreateWebhook,
+  handleUpdateWebhook,
+  handleDeleteWebhook
+} from "./tools/webhook.js";
+
 import { Logger } from "./logger.js";
 import { clickUpServices } from "./services/shared.js";
 import { enhanceToolsWithWorkspace } from "./tools/tool-enhancer.js";
@@ -315,6 +345,9 @@ export function configureServer() {
       ...checklistTools,
       ...viewTools,
       ...commentTools,
+      ...chatTools,
+      ...customFieldsTools,
+      ...webhookTools,
       ...documentModule()
     ] as Tool[];
 
@@ -335,8 +368,8 @@ export function configureServer() {
 
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
-    toolCount: 89,
-    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view", "comment"]
+    toolCount: 107,
+    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view", "comment", "chat", "custom-fields", "webhook"]
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -554,6 +587,42 @@ export function configureServer() {
           return handleGetCommentReplies(params as any);
         case "create_comment_reply":
           return handleCreateCommentReply(params as any);
+        case "get_chat_channels":
+          return handleGetChatChannels(params as any);
+        case "create_chat_channel":
+          return handleCreateChatChannel(params as any);
+        case "get_chat_channel":
+          return handleGetChatChannel(params as any);
+        case "update_chat_channel":
+          return handleUpdateChatChannel(params as any);
+        case "delete_chat_channel":
+          return handleDeleteChatChannel(params as any);
+        case "get_chat_messages":
+          return handleGetChatMessages(params as any);
+        case "send_chat_message":
+          return handleSendChatMessage(params as any);
+        case "update_chat_message":
+          return handleUpdateChatMessage(params as any);
+        case "delete_chat_message":
+          return handleDeleteChatMessage(params as any);
+        case "get_list_fields":
+          return handleGetListFields(params as any);
+        case "get_folder_fields":
+          return handleGetFolderFields(params as any);
+        case "get_space_fields":
+          return handleGetSpaceFields(params as any);
+        case "get_workspace_fields":
+          return handleGetWorkspaceFields(params as any);
+        case "delete_custom_field_value":
+          return handleDeleteCustomFieldValue(params as any);
+        case "get_webhooks":
+          return handleGetWebhooks(params as any);
+        case "create_webhook":
+          return handleCreateWebhook(params as any);
+        case "update_webhook":
+          return handleUpdateWebhook(params as any);
+        case "delete_webhook":
+          return handleDeleteWebhook(params as any);
         default:
           logger.error(`Unknown tool requested: ${name}`);
           const error = new Error(`Unknown tool: ${name}`);

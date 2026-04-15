@@ -30,6 +30,8 @@ vi.mock('../services/shared.js', () => ({
     checklist: {},
     view: {},
     comment: {},
+    chat: {},
+    customFields: {},
   },
   getClickUpServices: () => ({}),
 }));
@@ -262,6 +264,36 @@ import {
   handleCreateCommentReply,
 } from '../tools/comment.js';
 
+import {
+  chatTools,
+  handleGetChatChannels,
+  handleCreateChatChannel,
+  handleGetChatChannel,
+  handleUpdateChatChannel,
+  handleDeleteChatChannel,
+  handleGetChatMessages,
+  handleSendChatMessage,
+  handleUpdateChatMessage,
+  handleDeleteChatMessage,
+} from '../tools/chat.js';
+
+import {
+  customFieldsTools,
+  handleGetListFields,
+  handleGetFolderFields,
+  handleGetSpaceFields,
+  handleGetWorkspaceFields,
+  handleDeleteCustomFieldValue,
+} from '../tools/custom-fields.js';
+
+import {
+  webhookTools,
+  handleGetWebhooks,
+  handleCreateWebhook,
+  handleUpdateWebhook,
+  handleDeleteWebhook,
+} from '../tools/webhook.js';
+
 // ── Build the complete registry ───────────────────────────────────────────────
 
 type HandlerFn = (...args: any[]) => any;
@@ -413,6 +445,45 @@ const TOOL_REGISTRY: RegistryEntry[] = [
       handleCreateCommentReply,
     ][i],
   })),
+
+  // Chat
+  ...chatTools.map((tool, i) => ({
+    tool,
+    handler: [
+      handleGetChatChannels,
+      handleCreateChatChannel,
+      handleGetChatChannel,
+      handleUpdateChatChannel,
+      handleDeleteChatChannel,
+      handleGetChatMessages,
+      handleSendChatMessage,
+      handleUpdateChatMessage,
+      handleDeleteChatMessage,
+    ][i],
+  })),
+
+  // Custom Fields
+  ...customFieldsTools.map((tool, i) => ({
+    tool,
+    handler: [
+      handleGetListFields,
+      handleGetFolderFields,
+      handleGetSpaceFields,
+      handleGetWorkspaceFields,
+      handleDeleteCustomFieldValue,
+    ][i],
+  })),
+
+  // Webhook
+  ...webhookTools.map((tool, i) => ({
+    tool,
+    handler: [
+      handleGetWebhooks,
+      handleCreateWebhook,
+      handleUpdateWebhook,
+      handleDeleteWebhook,
+    ][i],
+  })),
 ];
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -444,13 +515,13 @@ describe('Tool Registration Integrity', () => {
     }
   });
 
-  it('total registered tool count is 96 (excluding document conditional tools: 89)', () => {
+  it('total registered tool count is 114 (excluding document conditional tools: 107)', () => {
     // Document tools (7) are conditionally enabled at runtime, but always in the registry
     const nonDocTools = TOOL_REGISTRY.filter(e => !['create_document', 'get_document',
       'list_documents', 'list_document_pages', 'get_document_pages',
       'create_document_page', 'update_document_page'].includes(e.tool.name));
-    expect(nonDocTools).toHaveLength(89);
-    expect(TOOL_REGISTRY).toHaveLength(96);
+    expect(nonDocTools).toHaveLength(107);
+    expect(TOOL_REGISTRY).toHaveLength(114);
   });
 
   it('all tool names use snake_case format', () => {
