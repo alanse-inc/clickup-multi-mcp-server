@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/alanse-inc/clickup-multi-mcp-server/compare/clickup-multi-mcp-server-v1.1.0...clickup-multi-mcp-server-v1.2.0) (2026-04-16)
+
+
+### Features
+
+* ViewService、MCP View/Comment ツール、task_type、ツール整合性テスト ([#2](https://github.com/alanse-inc/clickup-multi-mcp-server/issues/2)) ([5b6b0e2](https://github.com/alanse-inc/clickup-multi-mcp-server/commit/5b6b0e2daa289de879d903aca55c8aa8b4dd061f))
+
 ## [1.1.0](https://github.com/alanse-inc/clickup-multi-mcp-server/compare/clickup-multi-mcp-server-v1.0.2...clickup-multi-mcp-server-v1.1.0) (2026-01-11)
 
 
