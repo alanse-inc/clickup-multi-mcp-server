@@ -86,5 +86,8 @@ export const {
   timeTracking: timeTrackingService,
   document: documentService,
   goal: goalService,
-  checklist: checklistService
+  checklist: checklistService,
+  view: viewService,
+  comment: commentService,
+  chat: chatService
 } = clickUpServices;

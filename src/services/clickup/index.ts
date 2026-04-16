@@ -29,6 +29,12 @@ export { TimeTrackingService } from './time.js';
 export { DocumentService } from './document.js';
 export { GoalService } from './goal.js';
 export { ChecklistService } from './checklist.js';
+export { ViewService } from './view.js';
+export { CommentService } from './comment.js';
+export { CustomFieldsService } from './custom-fields.js';
+export type { ClickUpCustomField } from './custom-fields.js';
+export { ChatService } from './chat.js';
+export type { ClickUpChatChannel, ClickUpChatMessage, CreateChannelData, SendMessageData, GetMessagesResponse } from './chat.js';
 
 // Import service classes for the factory function
 import { WorkspaceService } from './workspace.js';
@@ -41,6 +47,10 @@ import { Logger } from '../../logger.js';
 import { DocumentService } from './document.js';
 import { GoalService } from './goal.js';
 import { ChecklistService } from './checklist.js';
+import { ViewService } from './view.js';
+import { CommentService } from './comment.js';
+import { CustomFieldsService } from './custom-fields.js';
+import { ChatService } from './chat.js';
 
 /**
  * Configuration options for ClickUp services
@@ -64,6 +74,10 @@ export interface ClickUpServices {
   document: DocumentService;
   goal: GoalService;
   checklist: ChecklistService;
+  view: ViewService;
+  comment: CommentService;
+  customFields: CustomFieldsService;
+  chat: ChatService;
 }
 
 // Singleton logger for ClickUp services
@@ -112,6 +126,18 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
   logger.info('Initializing ClickUp Checklist service');
   const checklistService = new ChecklistService(apiKey, teamId, baseUrl);
 
+  logger.info('Initializing ClickUp View service');
+  const viewService = new ViewService(apiKey, teamId, baseUrl);
+
+  logger.info('Initializing ClickUp Comment service');
+  const commentService = new CommentService(apiKey, teamId, baseUrl);
+
+  logger.info('Initializing ClickUp Custom Fields service');
+  const customFieldsService = new CustomFieldsService(apiKey, teamId, baseUrl);
+
+  logger.info('Initializing ClickUp Chat service');
+  const chatService = new ChatService(apiKey, teamId, baseUrl);
+
   const services = {
     workspace: workspaceService,
     task: taskService,
@@ -121,7 +147,11 @@ export function createClickUpServices(config: ClickUpServiceConfig): ClickUpServ
     timeTracking: timeTrackingService,
     document: documentService,
     goal: goalService,
-    checklist: checklistService
+    checklist: checklistService,
+    view: viewService,
+    comment: commentService,
+    customFields: customFieldsService,
+    chat: chatService
   };
 
   // Log successful completion

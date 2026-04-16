@@ -220,6 +220,11 @@ async function buildUpdateData(params: any): Promise<UpdateTaskData> {
     updateData.custom_fields = params.custom_fields;
   }
 
+  // Handle task type if provided (null clears the task type)
+  if (params.task_type !== undefined) {
+    updateData.task_type = params.task_type;
+  }
+
   // Handle assignees if provided - resolve emails/usernames to user IDs
   if (params.assignees !== undefined) {
     // Parse assignees if it's a string (from MCP serialization)
@@ -565,7 +570,8 @@ export async function createTaskHandler(params) {
     tags,
     custom_fields,
     check_required_custom_fields,
-    assignees
+    assignees,
+    task_type
   } = params;
 
   if (!name) throw new Error("Task name is required");
@@ -600,7 +606,8 @@ export async function createTaskHandler(params) {
     tags,
     custom_fields,
     check_required_custom_fields,
-    assignees: resolvedAssignees
+    assignees: resolvedAssignees,
+    task_type
   };
 
   // Only include priority if explicitly provided by the user

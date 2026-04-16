@@ -246,6 +246,8 @@ export interface CreateTaskData {
     id: string;
     value: any;
   }>;
+  /** Task type ID (from Types for Tasks feature). Set to null to clear. */
+  task_type?: string | null;
 }
 
 /**
@@ -415,6 +417,24 @@ export interface CommentsResponse {
 }
 
 /**
+ * Payload for updating an existing comment (task / view / list thread)
+ */
+export interface UpdateCommentData {
+  comment_text?: string;
+  assignee?: number;
+  resolved?: boolean;
+}
+
+/**
+ * Payload for creating a comment or threaded reply on a view, list, or as a reply
+ */
+export interface CreateCommentData {
+  comment_text: string;
+  notify_all?: boolean;
+  assignee?: number;
+}
+
+/**
  * Task attachment object as returned by the ClickUp API
  */
 export interface ClickUpTaskAttachment {
@@ -579,23 +599,23 @@ export interface WorkspaceTasksResponse {
 export interface ClickUpView {
   id: string;
   name: string;
-  type: string;
+  type: ViewType | string;
   parent: {
     id: string;
     type: number;
   };
-  grouping: any;
-  sorting: any;
-  filters: any;
-  columns: any;
-  team_sidebar: any;
-  settings: any;
+  grouping: ViewGrouping | null;
+  sorting: ViewSorting | null;
+  filters: ViewFilters | null;
+  columns: ViewColumn[];
+  team_sidebar: Record<string, unknown> | null;
+  settings: ViewSettings | null;
   date_created: string;
   creator: number;
   visibility: string;
   protected: boolean;
   protected_note: string | null;
-  protected_by: any | null;
+  protected_by: Record<string, unknown> | null;
   date_protected: string | null;
   orderindex: number;
 }
@@ -626,6 +646,130 @@ export interface ClickUpViewTasksResponse {
  */
 export interface ExtendedTaskFilters extends TaskFilters {
   detail_level?: 'summary' | 'detailed';
+}
+
+// ============================================================================
+// View Types
+// ============================================================================
+
+/**
+ * View type options
+ */
+export type ViewType =
+  | 'list'
+  | 'board'
+  | 'calendar'
+  | 'table'
+  | 'gantt'
+  | 'timeline'
+  | 'workload'
+  | 'activity'
+  | 'map'
+  | 'chat';
+
+/**
+ * Parent type for views (where the view is located in hierarchy).
+ * Reuses ClickUpParentType excluding Workspace(12) which is not valid for views:
+ * All(7) = Team/Everything level, Space(4), Folder(5), List(6)
+ */
+export type ViewParentType = Exclude<ClickUpParentType, ClickUpParentType.Workspace>;
+
+/**
+ * View grouping configuration
+ */
+export interface ViewGrouping {
+  field: string;
+  dir: 1 | -1; // 1=asc, -1=desc
+  collapsed?: string[]; // IDs of collapsed groups
+  groups?: Record<string, unknown>; // Additional group configuration
+}
+
+/**
+ * View sorting configuration
+ */
+export interface ViewSorting {
+  fields: Array<{
+    field: string;
+    dir: 1 | -1; // 1=asc, -1=desc
+  }>;
+}
+
+/**
+ * View filter field configuration
+ */
+export interface ViewFilterField {
+  field: string;
+  operator: '=' | '!=' | '<' | '>' | '<=' | '>=' | 'includes' | 'not includes' | 'is null' | 'is not null' | string;
+  value: string | number | boolean | string[] | null;
+}
+
+/**
+ * View filters configuration
+ */
+export interface ViewFilters {
+  op: 'AND' | 'OR';
+  fields: ViewFilterField[];
+  search?: string;
+  search_fields?: string[];
+  show_closed?: boolean;
+}
+
+/**
+ * View column configuration
+ */
+export interface ViewColumn {
+  id: string;
+  hidden?: boolean;
+  width?: number;
+}
+
+/**
+ * View settings configuration
+ */
+export interface ViewSettings {
+  show_task_locations?: boolean;
+  /** 0 = off, 1 = all subtasks, 2 = collapsed */
+  show_subtasks?: 0 | 1 | 2;
+  show_subtask_parent_names?: boolean;
+  show_closed_subtasks?: boolean;
+  show_assignees?: boolean;
+  show_images?: boolean;
+  collapse_empty_columns?: boolean;
+  me_comments?: boolean;
+  me_subtasks?: boolean;
+  me_checklists?: boolean;
+}
+
+/**
+ * Data for creating a view
+ */
+export interface CreateViewData {
+  name: string;
+  type: ViewType;
+  parent?: {
+    id: string;
+    type: ViewParentType;
+  };
+  grouping?: ViewGrouping;
+  sorting?: ViewSorting;
+  filters?: ViewFilters;
+  columns?: ViewColumn[];
+  divide?: number;
+  settings?: ViewSettings;
+}
+
+/**
+ * Data for updating a view.
+ * Note: `type` and `parent` are intentionally absent — they are immutable after creation.
+ */
+export interface UpdateViewData {
+  name?: string;
+  grouping?: ViewGrouping;
+  sorting?: ViewSorting;
+  filters?: ViewFilters;
+  columns?: ViewColumn[];
+  divide?: number;
+  settings?: ViewSettings;
 }
 
 /**

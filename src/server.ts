@@ -22,6 +22,7 @@ import {
   moveTaskTool,
   duplicateTaskTool,
   getTaskTool,
+  getTasksTool,
   deleteTaskTool,
   getTaskCommentsTool,
   createTaskCommentTool,
@@ -84,6 +85,9 @@ import {
 } from "./tools/folder.js";
 import {
   getSpaceTagsTool, handleGetSpaceTags,
+  createSpaceTagTool, handleCreateSpaceTag,
+  updateSpaceTagTool, handleUpdateSpaceTag,
+  deleteSpaceTagTool, handleDeleteSpaceTag,
   addTagToTaskTool, handleAddTagToTask,
   removeTagFromTaskTool, handleRemoveTagFromTask
 } from "./tools/tag.js";
@@ -138,6 +142,64 @@ import {
   handleEditChecklistItem,
   handleDeleteChecklistItem
 } from "./tools/checklist.js";
+
+import {
+  viewTools,
+  handleGetWorkspaceViews,
+  handleCreateWorkspaceView,
+  handleGetSpaceViews,
+  handleCreateSpaceView,
+  handleGetFolderViews,
+  handleCreateFolderView,
+  handleGetListViews,
+  handleCreateListView,
+  handleGetView,
+  handleUpdateView,
+  handleDeleteView,
+  handleGetViewTasks
+} from "./tools/view.js";
+
+import {
+  commentTools,
+  handleUpdateComment,
+  handleDeleteComment,
+  handleGetViewComments,
+  handleCreateViewComment,
+  handleGetListComments,
+  handleCreateListComment,
+  handleGetCommentReplies,
+  handleCreateCommentReply
+} from "./tools/comment.js";
+
+import {
+  chatTools,
+  handleGetChatChannels,
+  handleCreateChatChannel,
+  handleGetChatChannel,
+  handleUpdateChatChannel,
+  handleDeleteChatChannel,
+  handleGetChatMessages,
+  handleSendChatMessage,
+  handleUpdateChatMessage,
+  handleDeleteChatMessage
+} from "./tools/chat.js";
+
+import {
+  customFieldsTools,
+  handleGetListFields,
+  handleGetFolderFields,
+  handleGetSpaceFields,
+  handleGetWorkspaceFields,
+  handleDeleteCustomFieldValue
+} from "./tools/custom-fields.js";
+
+import {
+  webhookTools,
+  handleGetWebhooks,
+  handleCreateWebhook,
+  handleUpdateWebhook,
+  handleDeleteWebhook
+} from "./tools/webhook.js";
 
 import { Logger } from "./logger.js";
 import { clickUpServices } from "./services/shared.js";
@@ -221,6 +283,7 @@ export function configureServer() {
       availableWorkspacesTool,
       createTaskTool,
       getTaskTool,
+      getTasksTool,
       updateTaskTool,
       moveTaskTool,
       duplicateTaskTool,
@@ -254,6 +317,9 @@ export function configureServer() {
       updateFolderTool,
       deleteFolderTool,
       getSpaceTagsTool,
+      createSpaceTagTool,
+      updateSpaceTagTool,
+      deleteSpaceTagTool,
       addTagToTaskTool,
       removeTagFromTaskTool,
       getWorkspaceMembersTool,
@@ -277,6 +343,11 @@ export function configureServer() {
       addTaskLinkTool,
       deleteTaskLinkTool,
       ...checklistTools,
+      ...viewTools,
+      ...commentTools,
+      ...chatTools,
+      ...customFieldsTools,
+      ...webhookTools,
       ...documentModule()
     ] as Tool[];
 
@@ -297,8 +368,8 @@ export function configureServer() {
 
   // Register CallTool handler with proper logging
   logger.info("Registering tool handlers", {
-    toolCount: 45,
-    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist"]
+    toolCount: 107,
+    categories: ["workspace", "task", "time-tracking", "list", "folder", "tag", "member", "document", "goal", "space", "dependency", "checklist", "view", "comment", "chat", "custom-fields", "webhook"]
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (req) => {
@@ -338,6 +409,8 @@ export function configureServer() {
           return handleDuplicateTask(params);
         case "get_task":
           return handleGetTask(params);
+        case "get_tasks":
+          return handleGetTasks(params);
         case "delete_task":
           return handleDeleteTask(params);
         case "get_task_comments":
@@ -376,6 +449,12 @@ export function configureServer() {
           return handleDeleteFolder(params);
         case "get_space_tags":
           return handleGetSpaceTags(params);
+        case "create_space_tag":
+          return handleCreateSpaceTag(params);
+        case "update_space_tag":
+          return handleUpdateSpaceTag(params);
+        case "delete_space_tag":
+          return handleDeleteSpaceTag(params);
         case "add_tag_to_task":
           return handleAddTagToTask(params);
         case "remove_tag_from_task":
@@ -468,6 +547,82 @@ export function configureServer() {
           return handleEditChecklistItem(params as any);
         case "delete_checklist_item":
           return handleDeleteChecklistItem(params as any);
+        case "get_workspace_views":
+          return handleGetWorkspaceViews(params as any);
+        case "create_workspace_view":
+          return handleCreateWorkspaceView(params as any);
+        case "get_space_views":
+          return handleGetSpaceViews(params as any);
+        case "create_space_view":
+          return handleCreateSpaceView(params as any);
+        case "get_folder_views":
+          return handleGetFolderViews(params as any);
+        case "create_folder_view":
+          return handleCreateFolderView(params as any);
+        case "get_list_views":
+          return handleGetListViews(params as any);
+        case "create_list_view":
+          return handleCreateListView(params as any);
+        case "get_view":
+          return handleGetView(params as any);
+        case "update_view":
+          return handleUpdateView(params as any);
+        case "delete_view":
+          return handleDeleteView(params as any);
+        case "get_view_tasks":
+          return handleGetViewTasks(params as any);
+        case "update_comment":
+          return handleUpdateComment(params as any);
+        case "delete_comment":
+          return handleDeleteComment(params as any);
+        case "get_view_comments":
+          return handleGetViewComments(params as any);
+        case "create_view_comment":
+          return handleCreateViewComment(params as any);
+        case "get_list_comments":
+          return handleGetListComments(params as any);
+        case "create_list_comment":
+          return handleCreateListComment(params as any);
+        case "get_comment_replies":
+          return handleGetCommentReplies(params as any);
+        case "create_comment_reply":
+          return handleCreateCommentReply(params as any);
+        case "get_chat_channels":
+          return handleGetChatChannels(params as any);
+        case "create_chat_channel":
+          return handleCreateChatChannel(params as any);
+        case "get_chat_channel":
+          return handleGetChatChannel(params as any);
+        case "update_chat_channel":
+          return handleUpdateChatChannel(params as any);
+        case "delete_chat_channel":
+          return handleDeleteChatChannel(params as any);
+        case "get_chat_messages":
+          return handleGetChatMessages(params as any);
+        case "send_chat_message":
+          return handleSendChatMessage(params as any);
+        case "update_chat_message":
+          return handleUpdateChatMessage(params as any);
+        case "delete_chat_message":
+          return handleDeleteChatMessage(params as any);
+        case "get_list_fields":
+          return handleGetListFields(params as any);
+        case "get_folder_fields":
+          return handleGetFolderFields(params as any);
+        case "get_space_fields":
+          return handleGetSpaceFields(params as any);
+        case "get_workspace_fields":
+          return handleGetWorkspaceFields(params as any);
+        case "delete_custom_field_value":
+          return handleDeleteCustomFieldValue(params as any);
+        case "get_webhooks":
+          return handleGetWebhooks(params as any);
+        case "create_webhook":
+          return handleCreateWebhook(params as any);
+        case "update_webhook":
+          return handleUpdateWebhook(params as any);
+        case "delete_webhook":
+          return handleDeleteWebhook(params as any);
         default:
           logger.error(`Unknown tool requested: ${name}`);
           const error = new Error(`Unknown tool: ${name}`);
